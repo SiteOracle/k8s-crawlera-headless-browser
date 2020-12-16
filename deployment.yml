@@ -1,0 +1,57 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  labels:
+    app: crawlera-headless-browser
+  name: crawlera-headless-browser
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crawlera-headless-browser
+  revisionHistoryLimit: 2
+  minReadySeconds: 15
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 50%
+  template:
+    metadata:
+      labels:
+        app: crawlera-headless-browser
+    spec:
+      containers:
+        - name: crawlera-headless-browser
+          image: scrapinghub/crawlera-headless-proxy
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128M
+            limits:
+              cpu: 200m
+              memory: 256M
+          env:
+            - name: CRAWLERA_HEADLESS_ADBLOCKLISTS
+              value: "https://easylist.to/easylist/easylist.txt"
+            - name: CRAWLERA_HEADLESS_DEBUG
+              value: "true"
+            - name: CRAWLERA_HEADLESS_DIRECTACCESS
+              value: ".*?\\.(?:txt|css|eot|gif|ico|jpe?g|js|less|mkv|mp4|mpe?g|png|ttf|webm|webp|woff2?)$"
+            - name: CRAWLERA_HEADLESS_APIKEY
+              valueFrom:
+                secretKeyRef:
+                  key: api_key
+                  name: crawlera
+            - name: CRAWLERA_HEADLESS_XHEADERS
+              value: "cookies=disable"
+          ports:
+          - containerPort: 3128
+            protocol: TCP
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 15
+      dnsPolicy: "ClusterFirst"
+      imagePullSecrets:
+        - name: site-oracle-ghcr

@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: crawlera-headless-browser
+  name: crawlera-headless-browser
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 3128
+    protocol: TCP
+    name: crawlera-headless-browser
+  selector:
+    app: crawlera-headless-browser
