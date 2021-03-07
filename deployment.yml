@@ -53,5 +53,3 @@ spec:
       restartPolicy: Always
       terminationGracePeriodSeconds: 15
       dnsPolicy: "ClusterFirst"
-      imagePullSecrets:
-        - name: site-oracle-ghcr
